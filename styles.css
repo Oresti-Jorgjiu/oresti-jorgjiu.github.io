@@ -157,5 +157,23 @@ footer{padding:34px 0 64px;text-align:center;opacity:.92;border-top:1px solid rg
 .social.logo-fallback .fallback{ display:block; }
 
 @media (max-width:900px){
-  .nav .lang-switch{ margin-left:0; }
+  .social-rail{
+    display:grid;      /* show it again */
+    right:10px;
+    top:auto;
+    bottom:90px;       /* keep away from mobile browser UI */
+    transform:none;
+    z-index:9999;      /* keep it above other elements */
+    gap:10px;
+  }
+  .social{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+  }
+  .social svg{
+    width:20px;
+    height:20px;
+  }
+}
 }
