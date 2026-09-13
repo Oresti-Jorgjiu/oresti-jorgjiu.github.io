@@ -1,34 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-
-  <url>
-    <loc>https://oresti-jorgjiu.github.io/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://oresti-jorgjiu.github.io/"/>
-    <xhtml:link rel="alternate" hreflang="sq" href="https://oresti-jorgjiu.github.io/sq/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://oresti-jorgjiu.github.io/"/>
-  </url>
-  <url>
-    <loc>https://oresti-jorgjiu.github.io/about.html</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://oresti-jorgjiu.github.io/about.html"/>
-    <xhtml:link rel="alternate" hreflang="sq" href="https://oresti-jorgjiu.github.io/sq/about.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://oresti-jorgjiu.github.io/about.html"/>
-  </url>
-  <url>
-    <loc>https://oresti-jorgjiu.github.io/work.html</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://oresti-jorgjiu.github.io/work.html"/>
-    <xhtml:link rel="alternate" hreflang="sq" href="https://oresti-jorgjiu.github.io/sq/work.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://oresti-jorgjiu.github.io/work.html"/>
-  </url>
-  <url>
-    <loc>https://oresti-jorgjiu.github.io/contact.html</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://oresti-jorgjiu.github.io/contact.html"/>
-    <xhtml:link rel="alternate" hreflang="sq" href="https://oresti-jorgjiu.github.io/sq/contact.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://oresti-jorgjiu.github.io/contact.html"/>
-  </url>
-
-  <url><loc>https://oresti-jorgjiu.github.io/sq/</loc></url>
-  <url><loc>https://oresti-jorgjiu.github.io/sq/about.html</loc></url>
-  <url><loc>https://oresti-jorgjiu.github.io/sq/work.html</loc></url>
-  <url><loc>https://oresti-jorgjiu.github.io/sq/contact.html</loc></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://oresti-jorgjiu.github.io/</loc></url>
+  <url><loc>https://oresti-jorgjiu.github.io/about.html</loc></url>
+  <url><loc>https://oresti-jorgjiu.github.io/work.html</loc></url>
+  <url><loc>https://oresti-jorgjiu.github.io/contact.html</loc></url>
 </urlset>

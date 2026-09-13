@@ -420,6 +420,21 @@ ${bodyHtml}
     await putFile(manifestPath, JSON.stringify(list, null, 2), manifest.sha, msg);
   }
 
+  // Poll the published URL until GitHub Pages serves it. cache:"no-store" keeps
+  // the browser from replaying the 404 it may already have cached for this path.
+  async function waitUntilLive(url, onTick, timeoutMs = 120000){
+    const started = Date.now();
+    while (Date.now() - started < timeoutMs){
+      try {
+        const res = await fetch(url + "?t=" + Date.now(), { cache: "no-store" });
+        if (res.ok) return true;
+      } catch (e){ /* offline or transient - keep polling */ }
+      onTick(Math.round((Date.now() - started) / 1000));
+      await new Promise(r => setTimeout(r, 3000));
+    }
+    return false;
+  }
+
   /* ---------- actions ---------- */
   $("dl-btn").addEventListener("click", () => {
     const meta = collectMeta();
@@ -450,8 +465,21 @@ ${bodyHtml}
       const html = buildHtml(meta, converted.bodyHtml, kind);
       await publish(kind, meta, html, converted.bodyHtml);
       const liveUrl = `${SITE}/${DIR}/${meta.slug}.html`;
-      out.innerHTML = `<p>Published. GitHub Pages takes ~30-60s to rebuild, then it'll be live at:</p>
-        <p><a class="link" href="${liveUrl}" target="_blank" rel="noopener noreferrer">${liveUrl}</a></p>`;
+
+      // Committing to the repo is not the same as being served. GitHub Pages
+      // rebuilds afterwards, and a writeup with embedded images can take well
+      // over a minute. Handing over the link straight away meant clicking it
+      // landed on the 404 page, so wait until the URL actually answers.
+      out.innerHTML = `<p class="mono">Committed. Waiting for GitHub Pages to rebuild…</p>`;
+      const ready = await waitUntilLive(liveUrl, (s) => {
+        out.innerHTML = `<p class="mono">Committed. Waiting for GitHub Pages to rebuild… ${s}s</p>`;
+      });
+      out.innerHTML = ready
+        ? `<p class="ok">Live now:</p>
+           <p><a class="link" href="${liveUrl}" target="_blank" rel="noopener noreferrer">${liveUrl}</a></p>`
+        : `<p>Committed successfully, but the page still isn't being served after two
+            minutes. Big pages can take longer — give it a moment and reload:</p>
+           <p><a class="link" href="${liveUrl}" target="_blank" rel="noopener noreferrer">${liveUrl}</a></p>`;
     } catch (e){
       out.innerHTML = `<p class="mono err">${escapeHtml(e.message)}</p>`;
     } finally {
