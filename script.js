@@ -426,9 +426,12 @@
     const linkDistance = innerWidth < 900 ? 110 : 140;
     const linkDistanceSquared = linkDistance * linkDistance;
 
+    // Drift speed. Bumped up from the original crawl so the motion reads as
+    // motion at a glance - raise SPEED further for faster, lower for calmer.
+    const SPEED = 3.4;
     const points = Array.from({ length: count }, () => ({
       x: random(0, innerWidth), y: random(0, innerHeight),
-      vx: random(-0.22, 0.22),  vy: random(0.05, 0.30),
+      vx: random(-0.22, 0.22) * SPEED,  vy: random(0.05, 0.30) * SPEED,
       radius: random(0.9, 2.2),
       colour: COLOURS[(Math.random() * COLOURS.length) | 0],
       alpha: random(0.18, 0.55)
