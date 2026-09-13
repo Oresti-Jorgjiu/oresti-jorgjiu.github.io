@@ -106,6 +106,13 @@ viewport, then snapped it back 72px the moment the header landed. Worth 0.076
 CLS on any page shorter than the viewport. The header now reserves its 72px up
 front, and CLS measures 0 on every page.
 
+*Social rail no longer loads on phones.* It is `display:none` below 900px, but a
+hidden `<img>` is still fetched, so every mobile visit pulled four cross-origin
+icons from `cdn.simpleicons.org` that nobody could see. `script.js` now builds
+the rail only when the viewport is wide enough, and builds it later if the
+window grows. Mobile makes zero third-party requests; the footer already carries
+all five profile links, so nothing is lost.
+
 Not fixed, and not fixable here: Lighthouse's "use efficient cache lifetimes".
 GitHub Pages hardcodes `Cache-Control: max-age=600` on everything and exposes no
 way to change it. It does send ETags, so revalidation is a cheap 304 rather than

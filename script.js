@@ -221,15 +221,29 @@
     });
   }
 
-  // Social rail injection (brand-style logos)
+  // Social rail injection (brand-style logos).
+  // The rail is display:none below 900px, but a hidden <img> is still fetched,
+  // so phones were pulling four cross-origin icons nobody ever sees. Build it
+  // only when it will actually be visible, and build it later if the viewport
+  // grows past the breakpoint. Nothing is lost on mobile: the footer carries
+  // all five profile links.
   const rail = $("[data-social-rail]");
-  if (rail) rail.innerHTML = `
-    ${social("GitHub", LINKS.github, "github", logoSrc("github"))}
-    ${social("LinkedIn", LINKS.linkedin, "linkedin", logoSrc("linkedin"))}
-    ${social("Hack The Box", LINKS.htb, "htb", logoSrc("hackthebox"))}
-    ${social("TryHackMe", LINKS.thm, "thm", logoSrc("tryhackme"))}
-    ${social("Credly", LINKS.credly, "credly", logoSrc("credly"))}
-  `;
+  if (rail){
+    const wide = matchMedia("(min-width:901px)");
+    const buildRail = () => {
+      if (!wide.matches || rail.dataset.built) return;
+      rail.dataset.built = "1";
+      rail.innerHTML = `
+        ${social("GitHub", LINKS.github, "github", logoSrc("github"))}
+        ${social("LinkedIn", LINKS.linkedin, "linkedin", logoSrc("linkedin"))}
+        ${social("Hack The Box", LINKS.htb, "htb", logoSrc("hackthebox"))}
+        ${social("TryHackMe", LINKS.thm, "thm", logoSrc("tryhackme"))}
+        ${social("Credly", LINKS.credly, "credly", logoSrc("credly"))}
+      `;
+    };
+    buildRail();
+    if (wide.addEventListener) wide.addEventListener("change", buildRail);
+  }
 
   function social(label, href, kind, src){
     const fallback = kind === "htb" ? "HTB" : kind === "thm" ? "THM" : kind === "credly" ? "CR" : kind === "github" ? "GH" : "IN";
