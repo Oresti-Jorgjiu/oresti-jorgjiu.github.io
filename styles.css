@@ -97,7 +97,7 @@ body{
 }
 [data-site-footer]{flex-shrink:0}
 a{color:inherit}
-img{max-width:100%}
+img{max-width:100%;height:auto}   /* height:auto is load-bearing: imported images carry width/height attributes */
 
 ::selection{background:rgba(40,212,231,.26);color:var(--strong)}
 ::-webkit-scrollbar{width:10px;height:10px}
@@ -328,8 +328,6 @@ textarea{resize:vertical}
 
 /* 11. About / CV ========================================================= */
 .cv-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
-.cv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 28px;margin:8px 0 18px}
-@media (max-width:640px){.cv-grid{grid-template-columns:1fr}}
 /* Fact lists — CV bullets and homepage highlights */
 .facts{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
 .facts li{position:relative;padding-left:18px;max-width:74ch}
@@ -337,9 +335,6 @@ textarea{resize:vertical}
 .facts li .badge{margin-right:8px}
 .facts li:has(.badge){padding-left:0}
 .facts li:has(.badge)::before{display:none}
-
-.skills{margin-top:8px}
-.skills summary{cursor:pointer;font:600 .95rem "Space Grotesk",system-ui;color:var(--strong);padding:4px 0}
 
 /* 12. Writeups & long-form prose ========================================= */
 .meta-row{margin:14px 0 0}

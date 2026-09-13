@@ -16,6 +16,8 @@
     "title": "Bounty Hacker - Walkthrough",
     "slug": "bounty-hacker-walkthrough",
     "date": "2026-09-13",
-    "blurb": "First i Deployed the machine and connected to ovpn"
+    "blurb": "TryHackMe Bounty Hacker walkthrough: rustscan/nmap recon, anonymous FTP, a Hydra SSH brute-force, and privilege escalation to root via a sudo tar GTFOBin.",
+    "platform": "THM",
+    "difficulty": "Easy"
   }
 ]

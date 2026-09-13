@@ -143,9 +143,13 @@
   const typeOf = (item) => (item.type === "project" ? "project" : "writeup");
   const EMPTY_MESSAGE = "Nothing published yet - check back soon.";
 
-  /** Load content/data.json, newest first. Resolves to [] on any failure. */
+  /** Load content/data.json, newest first. Resolves to [] on any failure.
+   *  GitHub Pages caches everything for 10 minutes, which is fine for the pages
+   *  themselves but means a freshly published entry can be missing from this
+   *  listing for that long. The manifest is tiny, so bypass the cache for it and
+   *  keep the listing current. */
   function loadPosts() {
-    return fetch(rootPath("content/data.json"))
+    return fetch(rootPath("content/data.json"), { cache: "no-cache" })
       .then(res => (res.ok ? res.json() : []))
       .catch(() => [])
       .then(list => (Array.isArray(list) ? list : [])

@@ -69,6 +69,34 @@
         <label><span>Title</span><input id="f-title"></label>
         <label><span>Slug (the page URL)</span><input id="f-slug"></label>
         <label><span>Date</span><input id="f-date" type="date"></label>
+        <label>
+          <span>Summary</span>
+          <textarea id="f-blurb" rows="2" maxlength="180"></textarea>
+        </label>
+        <p class="mono" style="opacity:.7;margin:-2px 0 14px;font-size:.82rem">
+          Shown on the card and used as the page description in search results and link
+          previews. Pre-filled with the opening sentence &mdash; worth rewriting.
+          <span id="blurb-count"></span>
+        </p>
+
+        <div class="grid two" style="gap:0 18px">
+          <label><span>Platform <em style="opacity:.6;font-style:normal">(optional)</em></span>
+            <input id="f-platform" list="platform-options" placeholder="THM, HTB, ...">
+            <datalist id="platform-options">
+              <option value="THM"></option><option value="HTB"></option>
+              <option value="OverTheWire"></option><option value="PortSwigger"></option>
+            </datalist>
+          </label>
+          <label><span>Difficulty <em style="opacity:.6;font-style:normal">(optional)</em></span>
+            <select id="f-difficulty">
+              <option value="">&mdash;</option>
+              <option>Easy</option><option>Medium</option><option>Hard</option><option>Insane</option>
+            </select>
+          </label>
+        </div>
+        <label><span>Tags <em style="opacity:.6;font-style:normal">(optional, comma separated)</em></span>
+          <input id="f-tags" placeholder="Draft, Web, Privilege escalation">
+        </label>
       </section>
 
       <h2 class="h2" style="margin:26px 0 10px">Preview</h2>
@@ -144,8 +172,23 @@
     });
   }
 
-  // Screenshots of terminals are text-heavy, so keep small images untouched
-  // (PNG stays crisp) and only re-encode the big ones.
+  // Measure an image without touching its bytes. Knowing the real dimensions
+  // lets the generated page set width/height, so the browser reserves the right
+  // space and the page does not jump around as each screenshot decodes.
+  function measureBlob(blob){
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); resolve({ width: img.width, height: img.height }); };
+      img.onerror = e => { URL.revokeObjectURL(url); reject(e); };
+      img.src = url;
+    });
+  }
+
+  // Re-encode an oversized image, capping its width. Terminal screenshots are
+  // sharp text on flat colour, which PNG compresses far better than JPEG - the
+  // previous version forced JPEG and turned one screenshot into 597 KB. Encode
+  // both ways and keep whichever is actually smaller.
   function downscaleBlob(blob, maxW, quality){
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(blob);
@@ -157,7 +200,10 @@
         canvas.width = width; canvas.height = height;
         canvas.getContext("2d").drawImage(img, 0, 0, width, height);
         URL.revokeObjectURL(url);
-        resolve(canvas.toDataURL("image/jpeg", quality));
+
+        const jpeg = canvas.toDataURL("image/jpeg", quality);
+        const png  = canvas.toDataURL("image/png");
+        resolve({ dataUrl: png.length <= jpeg.length ? png : jpeg, width, height });
       };
       img.onerror = e => { URL.revokeObjectURL(url); reject(e); };
       img.src = url;
@@ -172,8 +218,14 @@
     const type = MIME[ext] || "image/png";
     const raw = await entry.async("blob");
     const blob = new Blob([raw], { type });
-    if (blob.size <= 250 * 1024) return blobToDataUrl(blob);
-    return downscaleBlob(blob, 1600, 0.9);
+
+    // Small images are left exactly as exported; re-encoding would only soften
+    // the text in a screenshot for no meaningful saving.
+    if (blob.size <= 250 * 1024){
+      const [dataUrl, size] = await Promise.all([blobToDataUrl(blob), measureBlob(blob)]);
+      return { dataUrl, width: size.width, height: size.height };
+    }
+    return downscaleBlob(blob, 1400, 0.85);
   }
 
   // Notion writes hrefs URL-encoded ("image%201.png"); match those back to zip entries.
@@ -199,15 +251,34 @@
     const root = doc.getElementById("root");
 
     // Images: pull the real bytes out of the zip and inline them.
+    let imageIndex = 0;
     for (const img of [...root.querySelectorAll("img")]){
       const src = img.getAttribute("src") || "";
       const entry = files ? findEntry(files, src) : null;
       if (entry){
-        try { img.setAttribute("src", await embedImage(entry)); }
+        try {
+          const embedded = await embedImage(entry);
+          img.setAttribute("src", embedded.dataUrl);
+          // Reserving the box up front stops the page reflowing as each image
+          // decodes. CSS still controls the displayed size.
+          if (embedded.width && embedded.height){
+            img.setAttribute("width", embedded.width);
+            img.setAttribute("height", embedded.height);
+          }
+        }
         catch (e) { img.remove(); continue; }
       }
       img.removeAttribute("style");
-      if (!img.getAttribute("alt")) img.setAttribute("alt", "");
+
+      // Notion exports alt text as the source filename ("image.png"), which a
+      // screen reader dutifully reads out for every screenshot on the page.
+      // That is worse than nothing, so drop it unless it says something real.
+      const alt = (img.getAttribute("alt") || "").trim();
+      img.setAttribute("alt", /^(image|untitled|screenshot)[\s\d_-]*\.\w+$/i.test(alt) ? "" : alt);
+
+      // The first image may be above the fold; the rest can wait.
+      img.setAttribute("decoding", "async");
+      if (imageIndex++ > 0) img.setAttribute("loading", "lazy");
       // A lone image in a paragraph becomes a figure so .prose styling applies.
       const p = img.parentElement;
       if (p && p.tagName === "P" && p.childNodes.length === 1){
@@ -296,6 +367,8 @@
       $("f-title").value = title;
       $("f-slug").value = slugify(title);
       $("f-date").value = today;
+      $("f-blurb").value = converted.blurb;
+      updateBlurbCount();
       $("preview-body").innerHTML = bodyHtml;
       $("result").style.display = "block";
 
@@ -324,6 +397,7 @@
 <meta property="og:url" content="${SITE}/${DIR}/${meta.slug}.html">
 <meta property="og:image" content="${SITE}/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Oresti Jorgjiu — Cybersecurity and CTFs">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="article:published_time" content="${escapeHtml(meta.date)}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/favicon.svg">
@@ -342,6 +416,8 @@
     <h1 class="h1 aberrate">${escapeHtml(meta.title)}</h1>
     <div class="row meta-row">
       <span class="badge type-${kind}">${t.label}</span>
+      ${meta.platform ? `<span class="badge">${escapeHtml(meta.platform)}</span>` : ""}
+      ${meta.difficulty ? `<span class="badge">${escapeHtml(meta.difficulty)}</span>` : ""}
       <span class="badge muted">${escapeHtml(meta.date)}</span>
     </div>
   </header>
@@ -357,9 +433,26 @@ ${bodyHtml}
 `;
   }
 
+  function updateBlurbCount(){
+    const el = $("f-blurb");
+    const used = el.value.length;
+    $("blurb-count").textContent = `${used}/180`;
+  }
+
   function collectMeta(){
     const title = $("f-title").value.trim();
-    return { title, slug: slugify($("f-slug").value || title), date: $("f-date").value || today, blurb: converted ? converted.blurb : "" };
+    const tags = $("f-tags").value.split(",").map(t => t.trim()).filter(Boolean);
+    return {
+      title,
+      slug: slugify($("f-slug").value || title),
+      date: $("f-date").value || today,
+      blurb: $("f-blurb").value.trim() || (converted ? converted.blurb : ""),
+      // Left off the entry entirely when blank, so the card renders no badge
+      // rather than an empty one.
+      ...($("f-platform").value.trim()   ? { platform: $("f-platform").value.trim() } : {}),
+      ...($("f-difficulty").value        ? { difficulty: $("f-difficulty").value } : {}),
+      ...(tags.length                    ? { tags } : {})
+    };
   }
 
   function validate(meta){
@@ -414,7 +507,12 @@ ${bodyHtml}
     const manifestPath = `${dir}/data.json`;
     const manifest = await getFile(manifestPath);
     const list = manifest.text ? JSON.parse(manifest.text) : [];
-    const entry = { type: kind, title: meta.title, slug: meta.slug, date: meta.date, blurb: meta.blurb };
+    const entry = {
+      type: kind, title: meta.title, slug: meta.slug, date: meta.date, blurb: meta.blurb,
+      ...(meta.platform   ? { platform: meta.platform }     : {}),
+      ...(meta.difficulty ? { difficulty: meta.difficulty } : {}),
+      ...(meta.tags       ? { tags: meta.tags }             : {})
+    };
     const idx = list.findIndex(x => x.slug === meta.slug);
     if (idx >= 0) list[idx] = { ...list[idx], ...entry }; else list.push(entry);
     await putFile(manifestPath, JSON.stringify(list, null, 2), manifest.sha, msg);
@@ -488,6 +586,8 @@ ${bodyHtml}
   });
 
   /* ---------- file input + drag/drop ---------- */
+  $("f-blurb").addEventListener("input", updateBlurbCount);
+
   $("file-input").addEventListener("change", () => {
     const f = $("file-input").files[0];
     if (f) importFile(f);
