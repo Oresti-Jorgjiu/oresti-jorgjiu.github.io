@@ -1,0 +1,20 @@
+{
+  "title": "Tryhackme \"Bug Bounty Hunter\" Walkthrough",
+  "slug": "tryhackme-bug-bounty-hunter-walkthrough",
+  "platform": "THM",
+  "difficulty": "Easy",
+  "date": "2026-09-06",
+  "tags": ["Draft"],
+  "summary": "Full writeup in progress — check back soon.",
+  "userFlag": "",
+  "rootFlag": "",
+  "sections": {
+    "overview": [
+      { "type": "text", "text": "This writeup is a work in progress. The full walkthrough — recon, exploitation, privilege escalation, and lessons learned — is coming soon." }
+    ],
+    "recon": [],
+    "exploitation": [],
+    "privesc": [],
+    "lessons": []
+  }
+}

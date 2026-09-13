@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /content/source/
+
+Sitemap: https://oresti-jorgjiu.github.io/sitemap.xml

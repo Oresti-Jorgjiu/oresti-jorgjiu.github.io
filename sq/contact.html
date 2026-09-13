@@ -1,7 +1,25 @@
 <!doctype html><html lang="sq-AL"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kontakt • Oresti Jorgjiu</title><meta name="description" content="Kontaktet dhe lidhjet sociale.">
+<title>Kontakt • Oresti Jorgjiu</title><meta name="description" content="Kontaktoni Oresti Jorgjiu — email, LinkedIn, GitHub, Credly dhe profilet CTF.">
+<link rel="canonical" href="https://oresti-jorgjiu.github.io/sq/contact.html">
+<link rel="alternate" hreflang="en" href="https://oresti-jorgjiu.github.io/contact.html">
+<link rel="alternate" hreflang="sq" href="https://oresti-jorgjiu.github.io/sq/contact.html">
+<link rel="alternate" hreflang="x-default" href="https://oresti-jorgjiu.github.io/contact.html">
+<meta name="theme-color" content="#020A14"><meta name="color-scheme" content="dark">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Oresti Jorgjiu">
+<meta property="og:locale" content="sq_AL"><meta property="og:locale:alternate" content="en_GB">
+<meta property="og:title" content="Kontakt • Oresti Jorgjiu">
+<meta property="og:description" content="Kontaktoni Oresti Jorgjiu — email, LinkedIn, GitHub, Credly dhe profilet CTF.">
+<meta property="og:url" content="https://oresti-jorgjiu.github.io/sq/contact.html">
+<meta property="og:image" content="https://oresti-jorgjiu.github.io/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Oresti Jorgjiu — Cybersecurity and CTFs">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../styles.css"><script defer src="../script.js"></script>
+<script>document.documentElement.className+=" js"</script><!-- gates the reveal animation, so content stays visible if script.js fails to load -->
 </head><body data-page="contact">
 <a class="skip-link" href="#main">Kalo te përmbajtja</a>
 <div class="fx" aria-hidden="true"><canvas id="particles"></canvas></div>
@@ -10,11 +28,11 @@
 <main id="main" class="site-main container">
   <header class="page-head" data-reveal>
     <h1 class="h1 aberrate">Kontakt</h1>
-    <p class="sub">Kthej pergjigje me shpejt ne : email ose LinkedIn.</p>
+    <p class="sub">Më shpejt: email ose LinkedIn.</p>
   </header>
 
   <section class="section grid two" data-reveal>
-    <article class="card glass" data-hotspot>
+    <article class="card glass">
       <h2 class="h2">Direkt</h2>
       <p><a class="link" href="mailto:jorgjiu.oresti@gmail.com">jorgjiu.oresti@gmail.com</a></p>
       <div class="row">
@@ -23,13 +41,17 @@
       </div>
     </article>
 
-    <form class="card glass form" data-hotspot id="contact-form">
+    <form class="card glass form" id="contact-form">
       <h2 class="h2">Mesazh</h2>
       <label><span>Emri</span><input name="name" autocomplete="name" required></label>
       <label><span>Email</span><input name="email" type="email" autocomplete="email" required></label>
       <label><span>Mesazh</span><textarea name="message" rows="5" required></textarea></label>
-      <button class="btn primary" type="submit">Dërgo </button>
-      <p class="mono">Ju lutem përdorni emailin tuaj të vërtetë që t’ju përgjigjem.</p>
+      <div class="row">
+        <button class="btn primary" type="submit">Dërgo</button>
+        <button class="btn small ghost" type="button" data-copy-email hidden>Kopjo email-in</button>
+      </div>
+      <p class="form-note">Ju lutem përdorni emailin tuaj të vërtetë që t’ju përgjigjem. Butoni hap aplikacionin tuaj të email-it — asgjë nuk dërgohet te kjo faqe.</p>
+      <p class="form-note" data-form-note role="status" aria-live="polite"></p>
     </form>
   </section>
 </main>

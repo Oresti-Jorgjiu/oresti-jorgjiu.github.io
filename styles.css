@@ -1,179 +1,450 @@
+/* ==========================================================================
+   Oresti Jorgjiu — site styles
+
+   1.  Tokens
+   2.  Reset & base
+   3.  Layout primitives
+   4.  Typography
+   5.  Background FX
+   6.  Header & navigation
+   7.  Cards & surfaces
+   8.  Buttons, pills & badges
+   9.  Forms
+   10. Social rail
+   11. About / CV
+   12. Writeups & long-form prose
+   13. Footer & utilities
+   14. Print
+   ========================================================================== */
+
+/* 1. Tokens ============================================================== */
 :root{
-  --bg:#020A14; --text:#9BA9B6; --strong:#EAF2F7;
-  --c:#28D4E7; --p:#B24BFF; --m:#FF2BD6;
-  --glass:rgba(10,20,32,.48); --glass2:rgba(10,20,32,.72);
-  --max:1120px; --pad:clamp(18px,3vw,54px); --gap:22px;
-  --r:18px; --r2:14px;
+  /* Colour */
+  --bg:#020A14;
+  --text:#9BA9B6;
+  --strong:#EAF2F7;
+  --muted:#7B8894;        /* 5.4:1 on --bg; use instead of opacity for dim text */
+  --c:#28D4E7;
+  --surface:rgba(13,19,28,.62);
+  --surface-solid:rgba(10,20,32,.72);
+  --hairline:rgba(255,255,255,.08);
+  --hairline-strong:rgba(255,255,255,.16);
+  --accent-line:rgba(40,212,231,.22);
+
+  /* Layout */
+  --max:1120px;
+  --pad:clamp(18px,3vw,54px);
+  --gap:22px;
+  --r:18px;
+  --r2:14px;
+
+  /* Depth */
   --shadow:0 18px 60px rgba(0,0,0,.55);
 }
-*{box-sizing:border-box} html,body{height:100%}
+
+/* 2. Reset & base ======================================================== */
+*{box-sizing:border-box}
+html,body{height:100%}
+html{scrollbar-color:rgba(40,212,231,.30) transparent;scrollbar-width:thin}
 body{
-  margin:0; color:var(--text,#9BA9B6); background:var(--bg,#020A14);
+  margin:0;
+  color:var(--text);
+  background:var(--bg);
   font:400 1rem/1.6 "Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   overflow-x:hidden;
+  /* Column layout keeps the footer at the bottom on pages shorter than the viewport */
+  display:flex;
+  flex-direction:column;
+  min-height:100%;
 }
-a{color:inherit} .container{width:min(var(--max),calc(100% - 2*var(--pad)));margin-inline:auto}
-.skip-link{position:absolute;left:12px;top:12px;padding:10px 12px;border-radius:10px;transform:translateY(-220%);z-index:9999;
-  background:rgba(10,20,32,.85);border:1px solid rgba(40,212,231,.30)}
+[data-site-footer]{flex-shrink:0}
+a{color:inherit}
+img{max-width:100%}
+
+::selection{background:rgba(40,212,231,.26);color:var(--strong)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(40,212,231,.20);border-radius:10px;border:2px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(40,212,231,.34);background-clip:content-box}
+
+:focus-visible{outline:2px solid rgba(40,212,231,.95);outline-offset:3px;box-shadow:0 0 0 4px rgba(40,212,231,.20)}
+
+.skip-link{
+  position:absolute;left:12px;top:12px;z-index:9999;
+  padding:10px 12px;border-radius:10px;
+  background:rgba(10,20,32,.85);border:1px solid rgba(40,212,231,.30);
+  transform:translateY(-220%);
+}
 .skip-link:focus{transform:translateY(0)}
-:focus-visible{outline:2px solid rgba(40,212,231,.95);outline-offset:3px;box-shadow:0 0 0 4px rgba(40,212,231,.20)} /* citeturn3search2 */
 
-.fx{position:fixed;inset:0;z-index:-1;pointer-events:none}
-#particles{width:100%;height:100%;display:block}
-.fx::before{content:"";position:absolute;inset:0;opacity:.92;mix-blend-mode:screen; /* citeturn0search5 */
-  background:
-    radial-gradient(900px 650px at 78% 24%, rgba(40,212,231,.22), transparent 62%),
-    radial-gradient(900px 650px at 84% 34%, rgba(178,75,255,.18), transparent 64%),
-    repeating-linear-gradient(to right, rgba(40,212,231,.06) 0 1px, transparent 1px 108px),
-    repeating-linear-gradient(to bottom, rgba(40,212,231,.05) 0 1px, transparent 1px 108px),
-    radial-gradient(1200px 900px at 50% 50%, rgba(0,0,0,.55), rgba(0,0,0,.92));}
-.fx::after{content:"";position:absolute;inset:-20%;opacity:.22;mix-blend-mode:overlay;
-  background:
-    repeating-linear-gradient(to bottom, rgba(255,255,255,.05) 0 1px, transparent 1px 9px), /* citeturn0search1 */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
-  background-size:auto,240px 240px;animation:scan 10s linear infinite}
-@keyframes scan{from{transform:translateY(0)}to{transform:translateY(6%)}}
-@media (prefers-reduced-motion:reduce){.fx::after{animation:none}} /* citeturn3search1 */
-
-.site-main{padding-bottom:42px} .section{padding:72px 0}
+/* 3. Layout primitives =================================================== */
+.container{width:min(var(--max),calc(100% - 2*var(--pad)));margin-inline:auto}
+.site-main{flex:1 0 auto;padding-bottom:42px}
+.section{padding:72px 0}
 .page-head{padding:44px 0 18px}
-.h1{font:700 clamp(2.6rem,5.4vw,4.5rem)/1.05 "Space Grotesk",system-ui;color:var(--strong);margin:0 0 10px;letter-spacing:-.02em}
-.h2{font:600 1.35rem/1.2 "Space Grotesk",system-ui;color:var(--strong);margin:0 0 8px}
-.sub{margin:0;opacity:.86;max-width:70ch}
-.lead{margin:12px 0 18px;max-width:62ch}
-.eyebrow,.mono,.k{font-family:"JetBrains Mono",ui-monospace}
-.eyebrow{letter-spacing:.14em;text-transform:uppercase;font-size:.82rem;opacity:.78;margin:0 0 10px}
-.k{letter-spacing:.12em;text-transform:uppercase;font-size:.86rem;opacity:.82;margin:0 0 8px}
-.link{color:var(--c);text-decoration:none} .link:hover{text-decoration:underline}
-.accent{color:var(--c);text-shadow:0 0 22px rgba(40,212,231,.22)} /* citeturn6search0 */
-.aberrate{animation:chroma 6s ease-in-out infinite;text-shadow:-1px 0 rgba(255,43,214,.22),1px 0 rgba(40,212,231,.18),0 0 26px rgba(40,212,231,.14)}
-@keyframes chroma{0%,100%{text-shadow:-1px 0 rgba(255,43,214,.22),1px 0 rgba(40,212,231,.18),0 0 26px rgba(40,212,231,.14)}
-50%{text-shadow:-2px 0 rgba(255,43,214,.18),2px 0 rgba(40,212,231,.14),0 0 30px rgba(178,75,255,.12)}}
-@media (prefers-reduced-motion:reduce){.aberrate{animation:none}}
-
-.cursor{display:inline-block;width:10px;height:10px;margin-left:10px;background:var(--c);box-shadow:0 0 18px rgba(40,212,231,.45);animation:blink 1.2s steps(1) infinite}
-@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
-
-[data-site-header]{position:sticky;top:0;z-index:20;background:rgba(10,20,32,.22);border-bottom:1px solid rgba(40,212,231,.14);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)} /* citeturn0search0 */
-.header{height:72px;display:flex;align-items:center;gap:16px}
-.brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:var(--strong);font:700 1rem/1 "Space Grotesk"}
-.brand i{width:24px;height:24px;border-radius:50%;border:2px solid rgba(40,212,231,.55);box-shadow:0 0 18px rgba(40,212,231,.20)}
-.nav{margin-left:auto;display:flex;gap:16px;align-items:center}
-.nav a{padding:10px 10px;border-radius:999px;text-decoration:none;opacity:.92}
-.nav a[aria-current="page"]{color:var(--c);box-shadow:0 0 0 1px rgba(40,212,231,.22) inset}
-.toggle{display:none;margin-left:auto;border:1px solid rgba(40,212,231,.22);background:rgba(10,20,32,.35);color:var(--strong);border-radius:12px;padding:10px 12px}
-@media (max-width:900px){
-  .toggle{display:inline-flex}
-  .nav{display:none;position:fixed;inset:72px 0 auto 0;flex-direction:column;gap:8px;padding:14px var(--pad) 18px;
-    background:rgba(2,10,20,.86);border-bottom:1px solid rgba(40,212,231,.14)}
-  .nav.open{display:flex}
-}
+.row{display:flex;gap:10px;flex-wrap:wrap}
 
 .grid{display:grid;gap:var(--gap)}
 .grid.cards{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media (max-width:900px){.grid.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.two{grid-template-columns:1fr}}
-@media (max-width:480px){.grid.cards{grid-template-columns:1fr}.section{padding:40px 0}.page-head{padding:32px 0 14px}}
+/* Homepage cards flex to fill the row whether two or three of them render */
+.grid.home-cards{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+@media (max-width:900px){
+  .grid.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.two{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .grid.cards{grid-template-columns:1fr}
+  .section{padding:40px 0}
+  .page-head{padding:32px 0 14px}
+}
 
-.card{position:relative;padding:22px;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
-.glass{
-  border:1px solid transparent;
+/* 4. Typography ========================================================== */
+.h1{font:700 clamp(2.6rem,5.4vw,4.5rem)/1.05 "Space Grotesk",system-ui;color:var(--strong);margin:0 0 10px;letter-spacing:-.02em}
+.h2{font:600 1.35rem/1.2 "Space Grotesk",system-ui;color:var(--strong);margin:0 0 8px}
+.sub{margin:0;opacity:.86;max-width:70ch}
+.lead{margin:12px 0 18px;max-width:62ch}
+.mono,.k{font-family:"JetBrains Mono",ui-monospace}
+.k{letter-spacing:.12em;text-transform:uppercase;font-size:.86rem;opacity:.82;margin:0 0 8px}
+.link{color:var(--c);text-decoration:none}
+.link:hover{text-decoration:underline}
+.accent{color:var(--c);text-shadow:0 0 12px rgba(40,212,231,.12)}
+.aberrate{text-shadow:-1px 0 rgba(255,43,214,.10),1px 0 rgba(40,212,231,.08),0 0 16px rgba(40,212,231,.08)}
+
+.cursor{
+  display:inline-block;width:10px;height:10px;margin-left:10px;
+  background:var(--c);box-shadow:0 0 10px rgba(40,212,231,.28);
+  animation:blink 1.2s steps(1) infinite;
+}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cursor{animation:none}}
+
+/* Inline code and code blocks (writeups lean on these heavily) */
+code{
+  font-family:"JetBrains Mono",ui-monospace;font-size:.9em;
+  background:rgba(40,212,231,.08);border:1px solid rgba(40,212,231,.14);
+  border-radius:6px;padding:.12em .4em;color:var(--strong);
+}
+pre{
+  margin:16px 0;padding:16px 18px;border-radius:var(--r2);
+  background:rgba(2,10,20,.75);border:1px solid var(--hairline);
+  overflow-x:auto;
+}
+pre code{background:none;border:0;padding:0;font-size:.86rem;line-height:1.55;white-space:pre}
+
+/* 5. Background FX ======================================================= */
+.fx{position:fixed;inset:0;z-index:-1;pointer-events:none}
+#particles{width:100%;height:100%;display:block}
+.fx::before{
+  content:"";position:absolute;inset:0;opacity:.55;mix-blend-mode:screen;
   background:
-   linear-gradient(180deg, rgba(10,20,32,.66), rgba(10,20,32,.28)) padding-box,
-   linear-gradient(135deg, rgba(40,212,231,.65), rgba(178,75,255,.52), rgba(255,255,255,.10)) border-box;
-  backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);
-} /* citeturn0search0 */
-@supports not ((backdrop-filter:blur(1px))){.glass{background:var(--glass2)}}
-.glass::before{content:"";position:absolute;inset:-2px;pointer-events:none;mix-blend-mode:screen;
-  background:radial-gradient(600px 320px at var(--mx,50%) var(--my,30%), rgba(40,212,231,.20), rgba(178,75,255,.12), transparent 68%)}
-.glass::after{content:"";position:absolute;inset:-45%;pointer-events:none;opacity:0;
-  background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.12) 45%, transparent 55%);
-  transform:translateX(-60%) rotate(10deg)}
-.glass:hover::after{opacity:.85;animation:sheen 900ms ease}
-@keyframes sheen{from{transform:translateX(-60%) rotate(10deg)}to{transform:translateX(80%) rotate(10deg)}}
-@media (prefers-reduced-motion:reduce){.glass:hover::after{animation:none;opacity:0}}
+    radial-gradient(900px 650px at 78% 24%, rgba(40,212,231,.12), transparent 62%),
+    radial-gradient(900px 650px at 84% 34%, rgba(178,75,255,.09), transparent 64%),
+    repeating-linear-gradient(to right, rgba(40,212,231,.03) 0 1px, transparent 1px 108px),
+    repeating-linear-gradient(to bottom, rgba(40,212,231,.03) 0 1px, transparent 1px 108px),
+    radial-gradient(1200px 900px at 50% 50%, rgba(0,0,0,.55), rgba(0,0,0,.92));
+}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border-radius:14px;text-decoration:none;
-  border:1px solid rgba(40,212,231,.26);background:rgba(10,20,32,.35);color:var(--strong);box-shadow:0 0 18px rgba(40,212,231,.10)}
-.btn:hover{box-shadow:0 0 18px rgba(40,212,231,.22),0 0 70px rgba(178,75,255,.10);transform:translateY(-1px)}
+/* 6. Header & navigation ================================================= */
+[data-site-header]{
+  position:sticky;top:0;z-index:20;
+  background:rgba(10,20,32,.22);border-bottom:1px solid rgba(40,212,231,.14);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.header{height:72px;display:flex;align-items:center;gap:16px}
+.brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:var(--strong);font:700 1rem/1 "Space Grotesk",system-ui}
+.brand i{width:24px;height:24px;border-radius:50%;border:2px solid rgba(40,212,231,.45);box-shadow:0 0 10px rgba(40,212,231,.10)}
+
+.nav{margin-left:auto;display:flex;gap:16px;align-items:center}
+.nav a{padding:10px;border-radius:999px;text-decoration:none;opacity:.92;transition:color 160ms ease,opacity 160ms ease}
+.nav a:hover{opacity:1;color:var(--strong)}
+.nav a[aria-current="page"]{color:var(--c);box-shadow:0 0 0 1px rgba(40,212,231,.22) inset}
+
+/* Language switch: minimal text toggle, set off by a hairline divider */
+.nav .lang-switch{
+  margin-left:10px;padding-left:16px;
+  border-left:1px solid rgba(255,255,255,.14);
+  color:var(--text);
+  font:600 .82rem/1 "JetBrains Mono",ui-monospace;
+  letter-spacing:.06em;text-decoration:none;
+}
+.nav .lang-switch:hover{color:var(--c)}
+
+.toggle{
+  display:none;margin-left:auto;padding:10px 12px;border-radius:12px;
+  border:1px solid rgba(40,212,231,.22);background:rgba(10,20,32,.35);color:var(--strong);
+}
+@media (max-width:900px){
+  .toggle{display:inline-flex}
+  .nav{
+    display:none;position:fixed;inset:72px 0 auto 0;
+    flex-direction:column;gap:8px;padding:14px var(--pad) 18px;
+    /* Near-opaque plus a blur: at .86 the page headline read straight through
+       the open menu and collided with the link labels. */
+    background:rgba(2,10,20,.97);border-bottom:1px solid rgba(40,212,231,.14);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:0 18px 40px rgba(0,0,0,.45);
+  }
+  .nav.open{display:flex}
+  .nav .lang-switch{
+    margin-left:0;padding-left:0;border-left:none;
+    padding-top:10px;border-top:1px solid rgba(255,255,255,.14);
+  }
+}
+
+/* 7. Cards & surfaces ==================================================== */
+.card{position:relative;padding:24px;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.glass{
+  border:1px solid var(--hairline);
+  background:var(--surface);
+  backdrop-filter:blur(14px) saturate(120%);-webkit-backdrop-filter:blur(14px) saturate(120%);
+  transition:border-color 200ms ease,background-color 200ms ease;
+}
+@supports not ((backdrop-filter:blur(1px))){.glass{background:var(--surface-solid)}}
+.glass:hover{border-color:var(--hairline-strong);background:rgba(15,22,33,.68)}
+
+.empty-state{padding:48px 24px;text-align:center;color:var(--muted)}
+
+/* Cards laid out as a column so the CTA sits flush at the bottom */
+.card.stack{display:flex;flex-direction:column}
+.card.stack .push{margin-top:auto;padding-top:14px}
+
+/* 8. Buttons, pills & badges ============================================= */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 16px;border-radius:14px;text-decoration:none;
+  border:1px solid rgba(40,212,231,.26);background:rgba(10,20,32,.35);color:var(--strong);
+  box-shadow:0 0 8px rgba(40,212,231,.06);
+  transition:box-shadow 180ms ease,transform 180ms ease,border-color 180ms ease;
+}
+.btn:hover{box-shadow:0 0 10px rgba(40,212,231,.12),0 0 30px rgba(178,75,255,.05);transform:translateY(-1px)}
 .btn.primary{background:rgba(40,212,231,.12);border-color:rgba(40,212,231,.40)}
 .btn.ghost{background:rgba(10,20,32,.18)}
 .btn.small{padding:10px 12px;border-radius:12px;font-size:.92rem}
-.row{display:flex;gap:10px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){.btn:hover{transform:none}}
 
-.pill{padding:10px 12px;border-radius:var(--r2);border:1px solid rgba(40,212,231,.22);background:rgba(10,20,32,.22);text-decoration:none;color:var(--strong)}
+.pill{
+  padding:10px 12px;border-radius:var(--r2);
+  border:1px solid var(--accent-line);background:rgba(10,20,32,.22);
+  text-decoration:none;color:var(--strong);
+}
+.pill.tag{font-size:.82rem;padding:6px 10px;opacity:.85}
+
+/* Compact metadata badge — platform, difficulty, status */
+.badge{
+  display:inline-flex;align-items:center;padding:5px 10px;border-radius:8px;
+  font:600 .72rem/1 "JetBrains Mono",ui-monospace;letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid rgba(40,212,231,.28);background:rgba(40,212,231,.07);color:var(--strong);
+}
+.badge.muted{border-color:var(--hairline);background:rgba(255,255,255,.03);color:var(--text)}
+
+/* Type badge on a work card - writeups and projects share the listing, so the
+   two need to be distinguishable at a glance. */
+.badge.type-writeup{border-color:rgba(40,212,231,.34);background:rgba(40,212,231,.10)}
+.badge.type-project{border-color:rgba(178,75,255,.38);background:rgba(178,75,255,.12)}
+
+/* Type filter above the work grid. Injected by script.js, and only when there
+   is more than one type to filter between. */
+.work-filter{margin-bottom:22px}
+.filter{display:flex;flex-wrap:wrap;gap:8px}
+.filter-chip{
+  cursor:pointer;color:var(--text);font-size:.85rem;
+  transition:border-color 160ms ease,color 160ms ease,background-color 160ms ease;
+}
+.filter-chip:hover{color:var(--strong);border-color:var(--hairline-strong)}
+.filter-chip[aria-pressed="true"]{
+  color:var(--strong);border-color:rgba(40,212,231,.40);background:rgba(40,212,231,.10);
+}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{
+  padding:8px 12px;border-radius:var(--r2);
+  border:1px solid var(--hairline);background:rgba(255,255,255,.03);
+  font-family:"JetBrains Mono",ui-monospace;font-size:.85rem;
+}
+
+/* 9. Forms =============================================================== */
 .form label{display:grid;gap:6px;margin:10px 0}
-input,textarea{padding:12px 14px;border-radius:14px;border:1px solid rgba(40,212,231,.18);background:rgba(2,10,20,.55);color:var(--strong)}
+.form-note{font-family:"JetBrains Mono",ui-monospace;font-size:.85rem;color:var(--muted);margin:12px 0 0}
+.form-note.ok{color:#8AE6A2}
+.form-note.err{color:#FF9C9C}
+input,textarea,select{
+  padding:12px 14px;border-radius:14px;
+  border:1px solid rgba(40,212,231,.18);background:rgba(2,10,20,.55);color:var(--strong);
+  font:inherit;
+}
+textarea{resize:vertical}
+
+/* 10. Social rail ======================================================== */
 .social-rail{position:fixed;right:18px;top:40%;transform:translateY(-50%);z-index:30;display:grid;gap:10px}
-.social{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;border:1px solid rgba(40,212,231,.18);
-  background:rgba(10,20,32,.28);box-shadow:0 0 20px rgba(40,212,231,.10)}
-.social svg{filter:drop-shadow(0 0 10px rgba(40,212,231,.25))} /* citeturn6search2 */
-@media (max-width:900px){.social-rail{display:none}}
-
-[data-reveal]{opacity:0;transform:translateY(10px);transition:opacity 700ms ease,transform 700ms ease}
-.is-visible{opacity:1;transform:translateY(0)}
-footer{padding:34px 0 64px;text-align:center;opacity:.92;border-top:1px solid rgba(40,212,231,.12);background:rgba(10,20,32,.16)}
-.to-top{position:fixed;right:18px;bottom:18px;z-index:40;width:46px;height:46px;border-radius:14px;border:1px solid rgba(40,212,231,.22);
-  background:rgba(10,20,32,.45);color:var(--strong);box-shadow:0 0 18px rgba(40,212,231,.18)}
-
-
-/* Language switch button (stand out, same cyber style) */
-.nav .lang-switch{
-  margin-left:4px;
-  padding:8px 12px;
-  border-radius:999px;
-  border:1px solid rgba(40,212,231,.42);
-  background:linear-gradient(180deg, rgba(40,212,231,.14), rgba(178,75,255,.10));
-  color:var(--strong);
-  font:600 .9rem/1 "Space Grotesk",system-ui;
-  letter-spacing:.03em;
-  box-shadow:0 0 18px rgba(40,212,231,.16), inset 0 0 0 1px rgba(255,255,255,.03);
-  text-decoration:none;
-}
-.nav .lang-switch:hover{
-  box-shadow:0 0 22px rgba(40,212,231,.28),0 0 48px rgba(178,75,255,.16);
-}
-
-/* Social rail logos (real brand-like SVGs via images) */
 .social{
-  position:relative;
+  position:relative;width:44px;height:44px;border-radius:14px;
+  display:grid;place-items:center;
+  border:1px solid rgba(40,212,231,.18);background:rgba(10,20,32,.28);
+  box-shadow:0 0 10px rgba(40,212,231,.05);
+  transition:border-color 180ms ease,transform 180ms ease;
 }
-.social .logo{
-  width:20px;height:20px;display:block;object-fit:contain;
-  filter: drop-shadow(0 0 10px rgba(40,212,231,.22));
-}
-.social.is-credly .logo{ width:22px; height:22px; }
-.social.is-htb .logo{ width:21px; height:21px; }
-.social.is-thm .logo{ width:21px; height:21px; }
-.social.is-linkedin .logo{ width:20px; height:20px; }
-.social .fallback{
-  display:none;
-  font:700 9px/1 "JetBrains Mono", ui-monospace;
-  letter-spacing:.08em;
-  color:var(--strong);
-}
-.social.logo-fallback .logo{ display:none; }
-.social.logo-fallback .fallback{ display:block; }
+.social:hover{border-color:rgba(40,212,231,.40);transform:translateY(-1px)}
+.social svg{filter:drop-shadow(0 0 5px rgba(40,212,231,.12))}
+.social .logo{width:20px;height:20px;display:block;object-fit:contain;filter:drop-shadow(0 0 5px rgba(40,212,231,.10))}
+.social.is-credly .logo{width:22px;height:22px}
+.social.is-htb .logo{width:21px;height:21px}
+.social.is-thm .logo{width:21px;height:21px}
+.social .fallback{display:none;font:700 9px/1 "JetBrains Mono",ui-monospace;letter-spacing:.08em;color:var(--strong)}
+.social.logo-fallback .logo{display:none}
+.social.logo-fallback .fallback{display:block}
+@media (max-width:900px){.social-rail{display:none}}
+@media (prefers-reduced-motion:reduce){.social:hover{transform:none}}
 
-@media (max-width:900px){
-  .social-rail{
-    display:grid;      /* show it again */
-    right:10px;
-    top:auto;
-    bottom:90px;       /* keep away from mobile browser UI */
-    transform:none;
-    z-index:9999;      /* keep it above other elements */
-    gap:10px;
-  }
-  .social{
-    width:42px;
-    height:42px;
-    border-radius:12px;
-  }
-  .social svg{
-    width:20px;
-    height:20px;
-  }
+/* 11. About / CV ========================================================= */
+.cv-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.cv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 28px;margin:8px 0 18px}
+@media (max-width:640px){.cv-grid{grid-template-columns:1fr}}
+/* Fact lists — CV bullets and homepage highlights */
+.facts{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.facts li{position:relative;padding-left:18px;max-width:74ch}
+.facts li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--c);opacity:.7}
+.facts li .badge{margin-right:8px}
+.facts li:has(.badge){padding-left:0}
+.facts li:has(.badge)::before{display:none}
+
+.skills{margin-top:8px}
+.skills summary{cursor:pointer;font:600 .95rem "Space Grotesk",system-ui;color:var(--strong);padding:4px 0}
+
+/* 12. Writeups & long-form prose ========================================= */
+.meta-row{margin:14px 0 0}
+.card .mono.meta{color:var(--muted);margin:0 0 10px}
+
+/* Writeup body: capped text measure, clear rhythm between sections.
+   Code blocks and images stay full width — only running text is constrained. */
+.prose section + section{margin-top:30px;padding-top:26px;border-top:1px solid var(--hairline)}
+.prose p{margin:0 0 12px;max-width:74ch}
+.prose p:last-child{margin-bottom:0}
+.prose figure{margin:18px 0}
+.prose figure img{display:block;border-radius:12px;border:1px solid var(--hairline)}
+.prose figcaption{font-family:"JetBrains Mono",ui-monospace;font-size:.82rem;color:var(--muted);margin-top:8px;max-width:74ch}
+.prose > *:first-child{margin-top:0}
+
+/* Markdown constructs coming from Notion imports */
+.prose h2{font:600 1.35rem/1.25 "Space Grotesk",system-ui;color:var(--strong);margin:28px 0 10px}
+.prose h3{font:600 1.08rem/1.3 "Space Grotesk",system-ui;color:var(--strong);margin:22px 0 8px}
+.prose h4{font:600 .98rem/1.3 "Space Grotesk",system-ui;color:var(--strong);margin:18px 0 6px}
+.prose strong{color:var(--strong)}
+.prose a{color:var(--c);text-decoration:none}
+.prose a:hover{text-decoration:underline}
+
+.prose ul,.prose ol{margin:0 0 12px;padding-left:22px;max-width:74ch}
+.prose li{margin:4px 0}
+.prose li::marker{color:var(--c)}
+
+.prose blockquote{
+  margin:16px 0;padding:10px 16px;max-width:74ch;
+  border-left:2px solid var(--accent-line);background:rgba(40,212,231,.04);
+  border-radius:0 var(--r2) var(--r2) 0;
 }
+.prose blockquote p:last-child{margin-bottom:0}
+
+.prose hr{border:0;border-top:1px solid var(--hairline);margin:26px 0}
+
+/* Tables scroll inside their own box rather than stretching the page */
+.prose .table-wrap{overflow-x:auto;margin:16px 0}
+.prose table{border-collapse:collapse;width:100%;font-size:.92rem}
+.prose th,.prose td{border:1px solid var(--hairline);padding:8px 12px;text-align:left;vertical-align:top}
+.prose th{background:rgba(255,255,255,.04);color:var(--strong);font-weight:600}
+
+/* Notion sub-pages become expandable sections */
+.prose details.subpage{
+  margin:18px 0;padding:12px 16px;border-radius:var(--r2);
+  border:1px solid var(--hairline);background:rgba(255,255,255,.02);
+}
+.prose details.subpage summary{cursor:pointer;color:var(--strong);font-weight:600}
+.prose details.subpage[open] summary{margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--hairline)}
+
+/* 13. Footer & utilities ================================================= */
+/* Reveal-on-scroll is opt-in: the hidden state only applies once script.js has
+   run and set .js on <html>. If the script 404s or throws, content stays visible
+   rather than leaving a blank page. */
+.js [data-reveal]{opacity:0;transform:translateY(10px);transition:opacity 600ms ease,transform 600ms ease}
+.js .is-visible{opacity:1;transform:translateY(0)}
+@media (prefers-reduced-motion:reduce){
+  .js [data-reveal]{opacity:1;transform:none;transition:none}
+}
+
+footer{padding:40px 0 44px;border-top:1px solid rgba(40,212,231,.12);background:rgba(10,20,32,.16)}
+.footer-grid{
+  display:grid;gap:26px 40px;
+  grid-template-columns:minmax(240px,1.6fr) repeat(2,minmax(150px,1fr));
+  align-items:start;
+}
+.footer-col{display:grid;gap:8px;align-content:start}
+.footer-col .k{margin:0 0 2px}
+.footer-links{display:grid;gap:8px;justify-items:start}
+.footer-links a{text-decoration:none;color:var(--text);transition:color 160ms ease}
+.footer-links a:hover{color:var(--c);text-decoration:underline}
+.footer-bottom{
+  margin-top:28px;padding-top:18px;border-top:1px solid var(--hairline);
+  display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;
+  color:var(--muted);font-family:"JetBrains Mono",ui-monospace;font-size:.82rem;
+}
+/* Below 760px the identity block takes the full width and the two link lists
+   stay side by side - stacking all three makes the footer absurdly tall. */
+@media (max-width:760px){
+  .footer-grid{grid-template-columns:1fr 1fr;gap:22px 24px}
+  .footer-col:first-child{grid-column:1/-1}
+  footer{padding:32px 0 36px}
+}
+
+.to-top{
+  position:fixed;right:18px;bottom:18px;z-index:40;
+  width:46px;height:46px;border-radius:14px;
+  border:1px solid rgba(40,212,231,.22);background:rgba(10,20,32,.45);color:var(--strong);
+  box-shadow:0 0 8px rgba(40,212,231,.08);
+}
+
+/* 14. Print =============================================================
+   The About page doubles as a CV, so printing has to produce a plain,
+   ink-friendly document: chrome removed, dark theme inverted, cards kept
+   whole across page breaks. */
+@media print{
+  .fx,.social-rail,.to-top,.skip-link,[data-site-header],.lang-switch,
+  footer .footer-grid,#contact-form,.work-filter{display:none !important}
+
+  html,body{height:auto;background:#fff;color:#111}
+  body{display:block;font-size:11pt}
+  .container{width:100%;max-width:none}
+  .site-main{padding:0}
+  .section{padding:14pt 0}
+  .page-head{padding:0 0 10pt}
+
+  .js [data-reveal]{opacity:1 !important;transform:none !important}
+
+  .h1{font-size:22pt;color:#111;text-shadow:none}
+  .h2{font-size:13pt;color:#111}
+  .accent,.link,.prose a{color:#111}
+  .k{color:#444;opacity:1}
+  .card .mono.meta,.footer-bottom{color:#444}
+  .cursor{display:none}
+
+  .card,.glass{
+    background:none !important;border:1px solid #ccc;box-shadow:none;
+    padding:10pt 12pt;break-inside:avoid;page-break-inside:avoid;
+  }
+  .grid{display:block}
+  .grid > *{margin-bottom:10pt}
+  .chip,.badge,.pill,.badge.muted{border:1px solid #bbb;background:none;color:#111}
+  .btn{display:none}
+
+  /* Code is near-white on screen, which prints as nothing */
+  code{background:#f2f4f6;border:1px solid #ddd;color:#111}
+  pre{background:#f7f8f9;border:1px solid #ddd;color:#111;break-inside:avoid;page-break-inside:avoid}
+  pre code{background:none;border:0;color:#111}
+  .prose blockquote{background:none;border-left:3px solid #bbb;color:#111}
+  .prose th{background:#f2f4f6;color:#111}
+  .prose th,.prose td{border-color:#ccc}
+  .prose figure img{border:1px solid #ccc}
+  .prose figcaption,.prose details.subpage{color:#444}
+  .prose details.subpage{background:none;border-color:#ccc}
+  .facts li::before{background:#666}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:8pt;color:#555;word-break:break-all}
+  footer{border-top:1px solid #ccc;background:none}
 }

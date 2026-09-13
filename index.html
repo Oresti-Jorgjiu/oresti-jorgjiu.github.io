@@ -1,11 +1,26 @@
 <!doctype html><html lang="en-GB"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Oresti Jorgjiu • Cybersecurity & CTFs</title>
-<meta name="description" content="Personal Website: CTF , certifications, and GitHub projects.">
-<meta property="og:title" content="Oresti Jorgjiu • Cybersecurity & CTFs"><meta property="og:type" content="website">
+<meta name="description" content="Oresti Jorgjiu — final-year Software Engineering student in Tirana documenting a cybersecurity journey: CTF walkthroughs from TryHackMe and Hack The Box, certifications, and lab work.">
+<link rel="canonical" href="https://oresti-jorgjiu.github.io/">
+<link rel="alternate" hreflang="en" href="https://oresti-jorgjiu.github.io/">
+<link rel="alternate" hreflang="sq" href="https://oresti-jorgjiu.github.io/sq/">
+<link rel="alternate" hreflang="x-default" href="https://oresti-jorgjiu.github.io/">
+<meta name="theme-color" content="#020A14"><meta name="color-scheme" content="dark">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Oresti Jorgjiu">
+<meta property="og:locale" content="en_GB"><meta property="og:locale:alternate" content="sq_AL">
+<meta property="og:title" content="Oresti Jorgjiu • Cybersecurity &amp; CTFs">
+<meta property="og:description" content="A running record of my cybersecurity journey — CTF walkthroughs, certifications and daily offensive-security practice.">
+<meta property="og:url" content="https://oresti-jorgjiu.github.io/">
+<meta property="og:image" content="https://oresti-jorgjiu.github.io/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Oresti Jorgjiu — Cybersecurity and CTFs">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css"><script defer src="script.js"></script>
+<script>document.documentElement.className+=" js"</script><!-- gates the reveal animation, so content stays visible if script.js fails to load -->
 </head><body data-page="home">
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="fx" aria-hidden="true"><canvas id="particles"></canvas></div>
@@ -15,25 +30,41 @@
 <main id="main" class="site-main">
   <section class="hero container" data-reveal>
     <h1 class="h1 aberrate">Oresti <span class="accent">Jorgjiu</span><span class="cursor" aria-hidden="true"></span></h1>
-    <p class="sub">Software Engineering (Year 2) • Cybersecurity • Daily CTFs</p>
-    <p class="lead">Focused on Cybersecurity, Linux fundamentals, and clean writeups.</p>
+    <p class="sub">Cybersecurity • CTFs • Documenting the journey</p>
+    <p class="lead">A running record of how I'm learning offensive security — the boxes I break, the tools I pick up, and the certifications I'm working through. Every walkthrough documents the reasoning, not just the commands.</p>
     <div class="row">
-      <a class="btn primary" href="about.html">About </a>
-      <a class="btn ghost" href="projects.html">Projects (GitHub)</a>
+      <a class="btn primary" href="about.html">About</a>
+      <a class="btn ghost" href="work.html">Writeups &amp; Projects</a>
       <a class="btn" data-ctf="htb" href="#" target="_blank" rel="noopener noreferrer">Hack The Box ↗</a>
       <a class="btn" data-ctf="thm" href="#" target="_blank" rel="noopener noreferrer">TryHackMe ↗</a>
     </div>
   </section>
 
   <section class="section container" data-reveal>
-    <div class="grid cards">
-      <article class="card glass" data-hotspot>
-        <h2 class="h2">External hubs</h2>
-        <p>Projects: GitHub • Certs: Credly • CTF: HTB/THM • Writeups: coming soon ..</p>
-        <div class="row">
-          <a class="btn small" href="projects.html">GitHub ↗</a>
-          <a class="btn small ghost" data-link="credly" href="#" target="_blank" rel="noopener noreferrer">Credly ↗</a>
-          <a class="btn small ghost" data-link="writeups" href="#" target="_blank" rel="noopener noreferrer">Writeups ↗</a>
+    <div class="grid home-cards">
+      <article class="card glass stack">
+        <h2 class="h2">Where I'm at</h2>
+        <ul class="facts">
+          <li><span class="badge">TryHackMe</span> Top 2% — rank 0xB (Master), level 56</li>
+          <li><span class="badge">HTB</span> CPTS job-role path — 30% complete</li>
+          <li><span class="badge">Cisco</span> 11 Networking Academy certificates</li>
+        </ul>
+      </article>
+
+      <!-- Filled from content/data.json; the card removes itself when nothing is published. -->
+      <article class="card glass stack" data-latest>
+        <h2 class="h2">Latest</h2>
+        <p class="mono meta">Loading…</p>
+      </article>
+
+      <article class="card glass stack">
+        <h2 class="h2">Verify it</h2>
+        <p>Every claim above links back to the profile it comes from.</p>
+        <div class="push row">
+          <a class="btn small ghost" data-link="github" href="#" target="_blank" rel="noopener noreferrer me">GitHub ↗</a>
+          <a class="btn small ghost" data-link="credly" href="#" target="_blank" rel="noopener noreferrer me">Credly ↗</a>
+          <a class="btn small ghost" data-link="htb" href="#" target="_blank" rel="noopener noreferrer me">HTB ↗</a>
+          <a class="btn small ghost" data-link="thm" href="#" target="_blank" rel="noopener noreferrer me">TryHackMe ↗</a>
         </div>
       </article>
     </div>
@@ -42,4 +73,25 @@
 
 <footer data-site-footer></footer>
 <button class="to-top" type="button" aria-label="Back to top" hidden>▲</button>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Oresti Jorgjiu",
+  "url": "https://oresti-jorgjiu.github.io/",
+  "email": "mailto:jorgjiu.oresti@gmail.com",
+  "jobTitle": "Software Engineering student",
+  "description": "Final-year Software Engineering student in Tirana documenting a cybersecurity journey through CTF walkthroughs and certifications.",
+  "address": { "@type": "PostalAddress", "addressLocality": "Tirana", "addressCountry": "AL" },
+  "alumniOf": { "@type": "CollegeOrUniversity", "name": "Canadian Institute of Technology, Tirana" },
+  "knowsLanguage": ["sq", "en"],
+  "sameAs": [
+    "https://github.com/Oresti-Jorgjiu",
+    "https://www.linkedin.com/in/oresti-jorgjiu",
+    "https://profile.hackthebox.com/profile/019cb076-9282-7095-8870-ab7b1e4ed008",
+    "https://tryhackme.com/p/Or3st1",
+    "https://www.credly.com/users/oresti-jorgjiu"
+  ]
+}
+</script>
 </body></html>

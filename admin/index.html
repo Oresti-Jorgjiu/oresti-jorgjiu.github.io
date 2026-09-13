@@ -1,0 +1,525 @@
+<!doctype html><html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Oresti Jorgjiu</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+        integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"
+        integrity="sha512-zAs8dHhwlTbfcVGRX1x0EZAH/L99NjAFzX6muwOcOJc7dbGFNaW4O7b9QOyCMRYBNjO+E0Kx6yLDsiPQhhWm7g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+  .type-switch label{display:inline-flex;align-items:center;gap:8px;cursor:pointer;padding:10px 14px;border:1px solid var(--hairline);border-radius:var(--r2);background:rgba(255,255,255,.02)}
+  .type-switch input{width:auto;padding:0}
+  .drop{border:1px dashed rgba(40,212,231,.35);border-radius:var(--r2);padding:26px;text-align:center;background:rgba(40,212,231,.03)}
+  .drop.over{background:rgba(40,212,231,.10);border-color:rgba(40,212,231,.65)}
+  #preview-body{max-height:60vh;overflow-y:auto}
+  .err{color:#ff8a8a}
+  .ok{color:#8ae6a2}
+</style>
+</head><body>
+<main class="site-main container" style="padding-top:34px;padding-bottom:60px">
+  <p class="mono"><a class="link" href="../work.html">&larr; Back to site</a></p>
+  <h1 class="h1">Admin</h1>
+  <p class="sub">Export a page from Notion (<strong>Export &rarr; Markdown &amp; CSV</strong>), drop the .zip here, and publish.</p>
+
+  <section class="card glass" id="login-panel" style="margin-top:22px">
+    <h2 class="h2">Log in</h2>
+    <p>Paste a GitHub personal access token scoped to only this repo (<code>Oresti-Jorgjiu/oresti-jorgjiu.github.io</code>), permission <strong>Contents: Read and write</strong>, with an expiration set.
+      <a class="link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Create one on GitHub ↗</a></p>
+    <label><span>Personal access token</span><input id="pat-input" type="password" autocomplete="off" placeholder="github_pat_..."></label>
+    <p class="mono err" id="login-error" style="display:none"></p>
+    <div class="row" style="margin-top:10px">
+      <button class="btn primary" type="button" id="login-btn">Log in</button>
+      <button class="btn ghost" type="button" id="skip-login-btn">Skip — just download a file</button>
+    </div>
+    <p class="mono" style="opacity:.65;margin-top:16px;font-size:.82rem">This is a real GitHub credential — checked by GitHub itself, not by this page, so it can't be bypassed by reading the source. It's stored only in this browser (localStorage) and sent only to api.github.com. Treat it like a password: don't log in on a shared computer, and revoke it instantly from GitHub's settings if it's ever exposed.</p>
+  </section>
+
+  <div class="row" id="session-bar" style="display:none;margin:16px 0;align-items:center">
+    <span class="badge muted" id="session-label"></span>
+    <button class="btn small ghost" type="button" id="logout-btn">Log out</button>
+  </div>
+
+  <section id="editor" style="display:none">
+    <section class="card glass">
+      <h2 class="h2">1. What is it?</h2>
+      <div class="row type-switch">
+        <label><input type="radio" name="ctype" value="writeup" checked> Writeup</label>
+        <label><input type="radio" name="ctype" value="project"> Project</label>
+      </div>
+    </section>
+
+    <section class="card glass" style="margin-top:22px">
+      <h2 class="h2">2. Drop the Notion export</h2>
+      <div class="drop" id="drop">
+        <p style="margin:0 0 12px">Drag the <code>.zip</code> here, or pick a file</p>
+        <input type="file" id="file-input" accept=".zip,.md" style="width:auto">
+      </div>
+      <p class="mono" id="import-status" style="margin-top:12px;display:none"></p>
+    </section>
+
+    <section id="result" style="display:none">
+      <section class="card glass" style="margin-top:22px">
+        <h2 class="h2">3. Check the details</h2>
+        <label><span>Title</span><input id="f-title"></label>
+        <label><span>Slug (the page URL)</span><input id="f-slug"></label>
+        <label><span>Date</span><input id="f-date" type="date"></label>
+      </section>
+
+      <h2 class="h2" style="margin:26px 0 10px">Preview</h2>
+      <article class="card glass prose" id="preview-body"></article>
+
+      <p class="mono err" id="gen-error" style="display:none"></p>
+      <div class="row" style="margin-top:18px">
+        <button class="btn primary" type="button" id="publish-btn" style="display:none">Publish</button>
+        <button class="btn" type="button" id="dl-btn">Download HTML instead</button>
+      </div>
+      <section id="gen-output" class="card glass" style="margin-top:22px;display:none"></section>
+    </section>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const OWNER = "Oresti-Jorgjiu", REPO = "oresti-jorgjiu.github.io";
+  const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
+  const SITE = `https://${OWNER.toLowerCase()}.github.io`;
+  const today = new Date().toISOString().slice(0, 10);
+
+  const DIR = "content";                       // one directory for both kinds
+  const TYPES = {
+    writeup: { back: "../work.html", backText: "All writeups &amp; projects", label: "Writeup" },
+    project: { back: "../work.html", backText: "All writeups &amp; projects", label: "Project" }
+  };
+  const currentType = () => document.querySelector('input[name="ctype"]:checked').value;
+
+  // Keep single newlines as line breaks — Notion preserves them, and terminal
+  // output pasted into a page would otherwise collapse into one blob.
+  if (window.marked) marked.setOptions({ breaks: true, gfm: true, headerIds: false, mangle: false });
+
+  // GFM reads a lone "~" as strikethrough, which mangles terminal output
+  // (nmap prints "[~] Starting Nmap"). Swap lone tildes for a placeholder that
+  // Markdown won't touch, then restore them after parsing. Real "~~strike~~" survives.
+  const TILDE = "zZtildePlaceholderZz", DBL = "zZstrikePlaceholderZz", STAR = "zZstarPlaceholderZz";
+
+  function protectMarkdown(md){
+    // Lone "~" is never Notion strikethrough, but GFM reads it as one.
+    let out = md.split("~~").join(DBL).split("~").join(TILDE).split(DBL).join("~~");
+    // Emphasis should never span lines. If a line's asterisks can't pair up
+    // within that line they're literal text (nmap prints "|*http-title:"),
+    // so neutralise them rather than let Markdown eat them as an <em>.
+    out = out.split("\n").map(line =>
+      ((line.match(/\*/g) || []).length % 2 === 1) ? line.split("*").join(STAR) : line
+    ).join("\n");
+    return out;
+  }
+  const restoreMarkdown = (html) => html.split(TILDE).join("~").split(STAR).join("*");
+
+  let converted = null; // { title, bodyHtml, blurb }
+
+  /* ---------- helpers ---------- */
+  function slugify(s){ return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
+  // Escapes for attribute values too, not just text nodes - the generated page
+  // interpolates the title and blurb into double-quoted meta content attributes.
+  function escapeHtml(s){
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function b64EncodeUtf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function b64DecodeUtf8(b64){ return decodeURIComponent(escape(atob(b64.replace(/\n/g, "")))); }
+  function status(el, msg, cls){ el.style.display = "block"; el.className = "mono " + (cls || ""); el.textContent = msg; }
+
+  function blobToDataUrl(blob){
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(blob);
+    });
+  }
+
+  // Screenshots of terminals are text-heavy, so keep small images untouched
+  // (PNG stays crisp) and only re-encode the big ones.
+  function downscaleBlob(blob, maxW, quality){
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxW){ height = Math.round(height * maxW / width); width = maxW; }
+        const canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = e => { URL.revokeObjectURL(url); reject(e); };
+      img.src = url;
+    });
+  }
+
+  // JSZip hands back untyped blobs, so restore the real MIME from the extension —
+  // "application/octet-stream" data URIs only render because browsers sniff them.
+  const MIME = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", webp: "image/webp", svg: "image/svg+xml", avif: "image/avif" };
+  async function embedImage(entry){
+    const ext = entry.name.split(".").pop().toLowerCase();
+    const type = MIME[ext] || "image/png";
+    const raw = await entry.async("blob");
+    const blob = new Blob([raw], { type });
+    if (blob.size <= 250 * 1024) return blobToDataUrl(blob);
+    return downscaleBlob(blob, 1600, 0.9);
+  }
+
+  // Notion writes hrefs URL-encoded ("image%201.png"); match those back to zip entries.
+  function findEntry(files, href){
+    const decoded = decodeURIComponent(href);
+    if (files[decoded] && !files[decoded].dir) return files[decoded];
+    const base = decoded.split("/").pop();
+    return Object.values(files).find(f => !f.dir && f.name.split("/").pop() === base) || null;
+  }
+
+  /* ---------- markdown -> site html ---------- */
+  function stripLeadingTitle(md){
+    return md.replace(/^\s*#\s+.*(\r?\n)+/, "");
+  }
+  function firstHeading(md){
+    const m = md.match(/^\s*#\s+(.+)/);
+    return m ? m[1].trim() : "";
+  }
+
+  async function convertMarkdown(md, files, seen){
+    const html = restoreMarkdown(marked.parse(protectMarkdown(md)));
+    const doc = new DOMParser().parseFromString(`<body><div id="root">${html}</div></body>`, "text/html");
+    const root = doc.getElementById("root");
+
+    // Images: pull the real bytes out of the zip and inline them.
+    for (const img of [...root.querySelectorAll("img")]){
+      const src = img.getAttribute("src") || "";
+      const entry = files ? findEntry(files, src) : null;
+      if (entry){
+        try { img.setAttribute("src", await embedImage(entry)); }
+        catch (e) { img.remove(); continue; }
+      }
+      img.removeAttribute("style");
+      if (!img.getAttribute("alt")) img.setAttribute("alt", "");
+      // A lone image in a paragraph becomes a figure so .prose styling applies.
+      const p = img.parentElement;
+      if (p && p.tagName === "P" && p.childNodes.length === 1){
+        const fig = doc.createElement("figure");
+        fig.appendChild(img);
+        p.replaceWith(fig);
+      }
+    }
+
+    // Links: .md targets are Notion sub-pages -> inline them as expandable sections.
+    for (const a of [...root.querySelectorAll("a")]){
+      const href = a.getAttribute("href") || "";
+      if (!/\.md$/i.test(href.split("?")[0])){
+        if (/^https?:/i.test(href)){ a.setAttribute("target", "_blank"); a.setAttribute("rel", "noopener noreferrer"); }
+        continue;
+      }
+      const entry = files ? findEntry(files, href) : null;
+      if (!entry || seen.has(entry.name)){
+        a.replaceWith(doc.createTextNode(a.textContent));
+        continue;
+      }
+      seen.add(entry.name);
+      const subMd = await entry.async("string");
+      const subHtml = await convertMarkdown(stripLeadingTitle(subMd), files, seen);
+      const details = doc.createElement("details");
+      details.className = "subpage";
+      const summary = doc.createElement("summary");
+      summary.textContent = (a.textContent || "").trim() || firstHeading(subMd) || "Details";
+      details.appendChild(summary);
+      const body = doc.createElement("div");
+      body.innerHTML = subHtml;
+      details.appendChild(body);
+      const holder = (a.parentElement && a.parentElement.tagName === "P" && a.parentElement.childNodes.length === 1)
+        ? a.parentElement : a;
+      holder.replaceWith(details);
+    }
+
+    // Tables scroll in their own box instead of stretching the page.
+    for (const table of [...root.querySelectorAll("table")]){
+      const wrap = doc.createElement("div");
+      wrap.className = "table-wrap";
+      table.replaceWith(wrap);
+      wrap.appendChild(table);
+    }
+
+    return root.innerHTML.trim();
+  }
+
+  async function importFile(file){
+    const st = $("import-status");
+    status(st, "Reading…");
+    try {
+      let mainMd, files = null;
+
+      if (/\.md$/i.test(file.name)){
+        mainMd = await file.text();
+      } else {
+        if (!window.JSZip) throw new Error("Couldn't load the unzip library — check your connection and reload.");
+        const zip = await JSZip.loadAsync(file);
+        files = zip.files;
+        const mdEntries = Object.values(files).filter(f => !f.dir && /\.md$/i.test(f.name));
+        if (!mdEntries.length) throw new Error("No .md file in that zip. In Notion use Export → Markdown & CSV.");
+
+        // The main page is the one nothing else links to.
+        const texts = {};
+        for (const e of mdEntries) texts[e.name] = await e.async("string");
+        const referenced = new Set();
+        for (const name of Object.keys(texts)){
+          const re = /\]\(([^)]+?\.md)\)/gi;
+          let m;
+          while ((m = re.exec(texts[name]))) referenced.add(decodeURIComponent(m[1]).split("/").pop());
+        }
+        const main = mdEntries.find(e => !referenced.has(e.name.split("/").pop())) || mdEntries[0];
+        mainMd = texts[main.name];
+      }
+
+      const title = firstHeading(mainMd) || file.name.replace(/\.(zip|md)$/i, "").replace(/\s+[0-9a-f]{32}$/i, "");
+      const bodyHtml = await convertMarkdown(stripLeadingTitle(mainMd), files, new Set());
+
+      const tmp = document.createElement("div");
+      tmp.innerHTML = bodyHtml;
+      const firstPara = [...tmp.querySelectorAll("p")].map(p => p.textContent.trim()).find(Boolean) || "";
+
+      converted = { title, bodyHtml, blurb: firstPara.slice(0, 180) };
+
+      $("f-title").value = title;
+      $("f-slug").value = slugify(title);
+      $("f-date").value = today;
+      $("preview-body").innerHTML = bodyHtml;
+      $("result").style.display = "block";
+
+      const imgCount = tmp.querySelectorAll("img").length;
+      const subCount = tmp.querySelectorAll("details.subpage").length;
+      status(st, `Imported "${title}" — ${imgCount} image(s), ${subCount} sub-page(s) inlined.`, "ok");
+    } catch (e){
+      converted = null;
+      $("result").style.display = "none";
+      status(st, e.message, "err");
+    }
+  }
+
+  /* ---------- page output ---------- */
+  function buildHtml(meta, bodyHtml, kind){
+    const t = TYPES[kind];
+    return `<!doctype html><html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHtml(meta.title)} • Oresti Jorgjiu</title>
+<meta name="description" content="${escapeHtml(meta.blurb || meta.title)}">
+<link rel="canonical" href="${SITE}/${DIR}/${meta.slug}.html">
+<meta name="theme-color" content="#020A14"><meta name="color-scheme" content="dark">
+<meta property="og:type" content="article"><meta property="og:site_name" content="Oresti Jorgjiu">
+<meta property="og:title" content="${escapeHtml(meta.title)}">
+<meta property="og:description" content="${escapeHtml(meta.blurb || meta.title)}">
+<meta property="og:url" content="${SITE}/${DIR}/${meta.slug}.html">
+<meta property="og:image" content="${SITE}/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="article:published_time" content="${escapeHtml(meta.date)}">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css"><script defer src="../script.js"></scr` + `ipt>
+<scr` + `ipt>document.documentElement.className+=" js"</scr` + `ipt>
+</head><body data-page="work">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="fx" aria-hidden="true"><canvas id="particles"></canvas></div>
+<header data-site-header></header><aside class="social-rail" data-social-rail aria-label="Social links"></aside>
+
+<main id="main" class="site-main container">
+  <header class="page-head" data-reveal>
+    <p class="mono"><a class="link" href="${t.back}">&larr; ${t.backText}</a></p>
+    <h1 class="h1 aberrate">${escapeHtml(meta.title)}</h1>
+    <div class="row meta-row">
+      <span class="badge type-${kind}">${t.label}</span>
+      <span class="badge muted">${escapeHtml(meta.date)}</span>
+    </div>
+  </header>
+
+  <article class="card glass prose" data-reveal>
+${bodyHtml}
+  </article>
+</main>
+
+<footer data-site-footer></footer>
+<button class="to-top" type="button" aria-label="Back to top" hidden>▲</button>
+</body></html>
+`;
+  }
+
+  function collectMeta(){
+    const title = $("f-title").value.trim();
+    return { title, slug: slugify($("f-slug").value || title), date: $("f-date").value || today, blurb: converted ? converted.blurb : "" };
+  }
+
+  function validate(meta){
+    if (!converted) return "Import a Notion export first.";
+    if (!meta.title || !meta.slug) return "Title is required.";
+    return null;
+  }
+
+  /* ---------- GitHub ---------- */
+  function getToken(){ return localStorage.getItem("gh_pat") || ""; }
+  function authHeaders(){ return { Authorization: `Bearer ${getToken()}`, Accept: "application/vnd.github+json" }; }
+
+  async function verifyToken(token){
+    const res = await fetch(API, { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+    if (!res.ok) throw new Error(res.status === 401 ? "Invalid or expired token." : `Couldn't verify access (${res.status}).`);
+    return res.json();
+  }
+  async function getFile(path){
+    const res = await fetch(`${API}/contents/${path}`, { headers: authHeaders() });
+    if (res.status === 404) return { sha: null, text: null };
+    if (!res.ok) throw new Error(`Failed to read ${path} (${res.status})`);
+    const data = await res.json();
+    return { sha: data.sha, text: b64DecodeUtf8(data.content) };
+  }
+  async function putFile(path, content, sha, message){
+    const res = await fetch(`${API}/contents/${path}`, {
+      method: "PUT",
+      headers: { ...authHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ message, content: b64EncodeUtf8(content), ...(sha ? { sha } : {}) })
+    });
+    if (!res.ok){
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Failed to write ${path} (${res.status})`);
+    }
+    return res.json();
+  }
+
+  async function publish(kind, meta, html, bodyHtml){
+    const dir = DIR;
+    const msg = `${dir}: publish ${kind} ${meta.slug}`;
+
+    // Page first, manifest last: if a write fails part-way the listing never
+    // ends up pointing at a page that was never created.
+    const pagePath = `${dir}/${meta.slug}.html`;
+    const page = await getFile(pagePath);
+    await putFile(pagePath, html, page.sha, msg);
+
+    const contentPath = `${dir}/source/${meta.slug}.json`;
+    const existing = await getFile(contentPath);
+    await putFile(contentPath, JSON.stringify({ ...meta, bodyHtml }, null, 2), existing.sha, msg);
+
+    const manifestPath = `${dir}/data.json`;
+    const manifest = await getFile(manifestPath);
+    const list = manifest.text ? JSON.parse(manifest.text) : [];
+    const entry = { type: kind, title: meta.title, slug: meta.slug, date: meta.date, blurb: meta.blurb };
+    const idx = list.findIndex(x => x.slug === meta.slug);
+    if (idx >= 0) list[idx] = { ...list[idx], ...entry }; else list.push(entry);
+    await putFile(manifestPath, JSON.stringify(list, null, 2), manifest.sha, msg);
+  }
+
+  /* ---------- actions ---------- */
+  $("dl-btn").addEventListener("click", () => {
+    const meta = collectMeta();
+    const err = validate(meta);
+    if (err){ status($("gen-error"), err, "err"); return; }
+    $("gen-error").style.display = "none";
+    const html = buildHtml(meta, converted.bodyHtml, currentType());
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `${meta.slug}.html`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  $("publish-btn").addEventListener("click", async () => {
+    const meta = collectMeta();
+    const err = validate(meta);
+    if (err){ status($("gen-error"), err, "err"); return; }
+    $("gen-error").style.display = "none";
+    const kind = currentType();
+    const btn = $("publish-btn");
+    btn.disabled = true; btn.textContent = "Publishing…";
+    const out = $("gen-output");
+    out.style.display = "block";
+    out.innerHTML = `<p class="mono">Publishing…</p>`;
+    try {
+      const html = buildHtml(meta, converted.bodyHtml, kind);
+      await publish(kind, meta, html, converted.bodyHtml);
+      const liveUrl = `${SITE}/${DIR}/${meta.slug}.html`;
+      out.innerHTML = `<p>Published. GitHub Pages takes ~30-60s to rebuild, then it'll be live at:</p>
+        <p><a class="link" href="${liveUrl}" target="_blank" rel="noopener noreferrer">${liveUrl}</a></p>`;
+    } catch (e){
+      out.innerHTML = `<p class="mono err">${escapeHtml(e.message)}</p>`;
+    } finally {
+      btn.disabled = false; btn.textContent = "Publish";
+    }
+  });
+
+  /* ---------- file input + drag/drop ---------- */
+  $("file-input").addEventListener("change", () => {
+    const f = $("file-input").files[0];
+    if (f) importFile(f);
+  });
+  const drop = $("drop");
+  ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); drop.classList.add("over");
+  }));
+  ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => {
+    e.preventDefault(); drop.classList.remove("over");
+  }));
+  drop.addEventListener("drop", e => {
+    const f = e.dataTransfer.files[0];
+    if (f) importFile(f);
+  });
+
+  /* ---------- login / session ---------- */
+  function showEditor(loggedIn){
+    $("editor").style.display = "block";
+    $("publish-btn").style.display = loggedIn ? "inline-flex" : "none";
+  }
+  function enterLoggedInSession(repo){
+    $("login-panel").style.display = "none";
+    $("session-bar").style.display = "flex";
+    $("session-label").textContent = `Logged in — ${repo.full_name}`;
+    showEditor(true);
+  }
+  async function attemptLogin(token){
+    $("login-error").style.display = "none";
+    try {
+      const repo = await verifyToken(token);
+      localStorage.setItem("gh_pat", token);
+      enterLoggedInSession(repo);
+    } catch (e){
+      status($("login-error"), e.message, "err");
+    }
+  }
+
+  $("skip-login-btn").addEventListener("click", () => showEditor(false));
+  $("login-btn").addEventListener("click", () => {
+    const token = $("pat-input").value.trim();
+    if (!token){ status($("login-error"), "Paste a token first.", "err"); return; }
+    attemptLogin(token);
+  });
+  $("logout-btn").addEventListener("click", () => {
+    localStorage.removeItem("gh_pat");
+    $("session-bar").style.display = "none";
+    $("login-panel").style.display = "block";
+    $("editor").style.display = "none";
+    $("pat-input").value = "";
+  });
+
+  const stored = getToken();
+  if (stored){
+    $("login-panel").querySelector("h2").textContent = "Checking session…";
+    verifyToken(stored).then(enterLoggedInSession).catch(() => {
+      localStorage.removeItem("gh_pat");
+      $("login-panel").querySelector("h2").textContent = "Log in";
+    });
+  }
+})();
+</script>
+</body></html>

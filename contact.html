@@ -1,7 +1,25 @@
 <!doctype html><html lang="en-GB"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Contact • Oresti Jorgjiu</title><meta name="description" content="Contact and social links.">
+<title>Contact • Oresti Jorgjiu</title><meta name="description" content="Get in touch with Oresti Jorgjiu — email, LinkedIn, GitHub, Credly, and CTF profiles.">
+<link rel="canonical" href="https://oresti-jorgjiu.github.io/contact.html">
+<link rel="alternate" hreflang="en" href="https://oresti-jorgjiu.github.io/contact.html">
+<link rel="alternate" hreflang="sq" href="https://oresti-jorgjiu.github.io/sq/contact.html">
+<link rel="alternate" hreflang="x-default" href="https://oresti-jorgjiu.github.io/contact.html">
+<meta name="theme-color" content="#020A14"><meta name="color-scheme" content="dark">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Oresti Jorgjiu">
+<meta property="og:locale" content="en_GB"><meta property="og:locale:alternate" content="sq_AL">
+<meta property="og:title" content="Contact • Oresti Jorgjiu">
+<meta property="og:description" content="Get in touch with Oresti Jorgjiu — email, LinkedIn, GitHub, Credly, and CTF profiles.">
+<meta property="og:url" content="https://oresti-jorgjiu.github.io/contact.html">
+<meta property="og:image" content="https://oresti-jorgjiu.github.io/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Oresti Jorgjiu — Cybersecurity and CTFs">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css"><script defer src="script.js"></script>
+<script>document.documentElement.className+=" js"</script><!-- gates the reveal animation, so content stays visible if script.js fails to load -->
 </head><body data-page="contact">
 <a class="skip-link" href="#main">Skip to content</a>
 <div class="fx" aria-hidden="true"><canvas id="particles"></canvas></div>
@@ -14,7 +32,7 @@
   </header>
 
   <section class="section grid two" data-reveal>
-    <article class="card glass" data-hotspot>
+    <article class="card glass">
       <h2 class="h2">Direct</h2>
       <p><a class="link" href="mailto:jorgjiu.oresti@gmail.com">jorgjiu.oresti@gmail.com</a></p>
       <div class="row">
@@ -23,13 +41,17 @@
       </div>
     </article>
 
-    <form class="card glass form" data-hotspot id="contact-form">
+    <form class="card glass form" id="contact-form">
       <h2 class="h2">Message</h2>
       <label><span>Name</span><input name="name" autocomplete="name" required></label>
       <label><span>Email</span><input name="email" type="email" autocomplete="email" required></label>
       <label><span>Message</span><textarea name="message" rows="5" required></textarea></label>
-      <button class="btn primary" type="submit">Send </button>
-      <p class="mono">Please use your real email so I can respond.</p>
+      <div class="row">
+        <button class="btn primary" type="submit">Send</button>
+        <button class="btn small ghost" type="button" data-copy-email hidden>Copy email</button>
+      </div>
+      <p class="form-note">Please use your real email so I can respond. Sending opens your own mail app — nothing is submitted to this site.</p>
+      <p class="form-note" data-form-note role="status" aria-live="polite"></p>
     </form>
   </section>
 </main>
