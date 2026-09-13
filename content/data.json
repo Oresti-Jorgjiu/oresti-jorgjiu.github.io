@@ -10,5 +10,12 @@
       "Draft"
     ],
     "blurb": "Full writeup in progress — check back soon."
+  },
+  {
+    "type": "writeup",
+    "title": "Bounty Hacker - Walkthrough",
+    "slug": "bounty-hacker-walkthrough",
+    "date": "2026-09-13",
+    "blurb": "First i Deployed the machine and connected to ovpn"
   }
 ]
