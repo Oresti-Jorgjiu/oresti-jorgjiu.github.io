@@ -1,6 +1,7 @@
 /* ==========================================================================
    Oresti Jorgjiu — site styles
 
+   0.  Self-hosted fonts
    1.  Tokens
    2.  Reset & base
    3.  Layout primitives
@@ -16,6 +17,43 @@
    13. Footer & utilities
    14. Print
    ========================================================================== */
+
+/* 0. Self-hosted fonts =====================================================
+   Served from this origin instead of fonts.googleapis.com. The Google
+   stylesheet was a render-blocking request on a third-party origin, which cost
+   roughly 1.9s of mobile First Contentful Paint: the browser had to resolve and
+   TLS-handshake fonts.googleapis.com, parse the returned CSS, then repeat the
+   whole dance for fonts.gstatic.com before it could paint a single character.
+
+   All three families are variable fonts, so one file per family covers every
+   weight the stylesheet asks for. Latin subset only - arrows and box glyphs
+   sit outside this unicode-range and render from system fonts, exactly as they
+   did when the fonts came from Google.
+   ========================================================================== */
+@font-face{
+  font-family:"Space Grotesk";
+  font-style:normal;
+  font-weight:300 700;
+  font-display:swap;
+  src:url("fonts/space-grotesk.woff2") format("woff2");
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face{
+  font-family:"Inter";
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+  src:url("fonts/inter.woff2") format("woff2");
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face{
+  font-family:"JetBrains Mono";
+  font-style:normal;
+  font-weight:100 800;
+  font-display:swap;
+  src:url("fonts/jetbrains-mono.woff2") format("woff2");
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 /* 1. Tokens ============================================================== */
 :root{
@@ -150,6 +188,11 @@ pre code{background:none;border:0;padding:0;font-size:.86rem;line-height:1.55;wh
   position:sticky;top:0;z-index:20;
   background:rgba(10,20,32,.22);border-bottom:1px solid rgba(40,212,231,.14);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  /* script.js fills this element, so it is empty at first paint. Without a
+     reserved height the body flex column stretches <main> to fill the viewport,
+     then snaps it back 72px the moment the header lands - a 0.076 layout shift
+     on any page shorter than the viewport. Matches .header's height exactly. */
+  min-height:72px;
 }
 .header{height:72px;display:flex;align-items:center;gap:16px}
 .brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:var(--strong);font:700 1rem/1 "Space Grotesk",system-ui}

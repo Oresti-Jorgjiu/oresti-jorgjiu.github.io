@@ -54,6 +54,7 @@ content/    data.json (one manifest for writeups and projects)
             source/          Notion-import source JSON (robots-disallowed)
 admin/      Notion importer and publisher (noindex, disallowed in robots.txt)
 styles.css  script.js
+fonts/      self-hosted variable woff2 (see the changelog for why)
 favicon.svg og.png (1200x630 share card)  sitemap.xml  robots.txt
 
 writeups.html  projects.html  (and their sq/ twins)
@@ -85,6 +86,30 @@ A note on two things that are easy to break:
 ---
 
 ## Changelog
+
+**5.5** — 13 Sep 2026
+Performance pass, prompted by a Lighthouse run (mobile 89, desktop 98).
+
+*Fonts are now self-hosted* in `fonts/`. The Google Fonts stylesheet was a
+render-blocking request on a third-party origin, and Lighthouse put it at ~1.9s
+of mobile First Contentful Paint: the browser had to resolve and TLS-handshake
+`fonts.googleapis.com`, parse the CSS it returned, then repeat the whole thing
+for `fonts.gstatic.com` before it could paint any text. All three families are
+variable fonts, so one file each covers every weight — 3 files, 111 KB, latin
+subset. The old request pulled 8 static faces, of which the stylesheet used 4,
+and it never loaded the JetBrains Mono 700 that `.social .fallback` asks for
+(that was being synthesised; it is a real weight now).
+
+*Layout shift fixed.* `[data-site-header]` is filled by `script.js`, so it was
+empty at first paint; the body flex column stretched `<main>` to fill the
+viewport, then snapped it back 72px the moment the header landed. Worth 0.076
+CLS on any page shorter than the viewport. The header now reserves its 72px up
+front, and CLS measures 0 on every page.
+
+Not fixed, and not fixable here: Lighthouse's "use efficient cache lifetimes".
+GitHub Pages hardcodes `Cache-Control: max-age=600` on everything and exposes no
+way to change it. It does send ETags, so revalidation is a cheap 304 rather than
+a re-download. Only a CDN in front of Pages would move that audit.
 
 **5.4** — 9 Sep 2026
 Merged writeups and projects into one section.
